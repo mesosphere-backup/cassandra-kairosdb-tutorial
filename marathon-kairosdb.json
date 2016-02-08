@@ -1,0 +1,43 @@
+{
+    "acceptedResourceRoles": [
+        "slave_public"
+    ],
+    "constraints": [
+        [
+            "hostname",
+            "UNIQUE"
+        ]
+    ],
+    "container": {
+        "docker": {
+            "image": "mesosphere/archlinux-kairosdb:master",
+            "network": "BRIDGE",
+            "portMappings": [
+                {
+                    "containerPort": 8080,
+                    "hostPort": 0
+                },
+                {
+                    "containerPort": 4242,
+                    "hostPort": 0
+                },
+                {
+                    "containerPort": 2003,
+                    "hostPort": 0
+                },
+                {
+                    "containerPort": 2004,
+                    "hostPort": 0
+                }   
+            ]
+        },
+        "type": "DOCKER"
+    },
+    "cpus": 0.5,
+    "env": {
+        "CASS_HOSTS": "cassandra-dcos-node.cassandra.dcos.mesos:9160",
+        "REPFACTOR": "1"
+    },
+    "id": "kairos",
+    "mem": 500
+}
