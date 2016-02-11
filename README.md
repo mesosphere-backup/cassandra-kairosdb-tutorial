@@ -50,7 +50,6 @@ along with the port that Mesos has assigned to the container. You can glean the 
     $ dcos marathon task list
     APP              HEALTHY          STARTED              HOST     ID
     /cassandra/dcos    True   2016-02-09T05:51:45.269Z  10.0.2.113  cassandra_dcos.308b8c24-cef1-11e5-bf2e-02181a13a4a7
-    /grafana           True   2016-02-02T13:57:01.932Z  10.0.4.20   grafana.ce2c8b12-c9b4-11e5-bf2e-02181a13a4a7
     /kairos            True   2016-02-02T14:11:48.858Z  10.0.4.20   kairos.ce522993-c9b6-11e5-bf2e-02181a13a4a7
     $ dcos marathon task show kairos.ce522993-c9b6-11e5-bf2e-02181a13a4a7
     {
