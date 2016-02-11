@@ -9,7 +9,7 @@
     "env": {
         "KAIROSDB_API": "http://52.11.127.207:24653",
         "GITHUB_ORG": "mesosphere",
-        "POLL_INTERVAL": "30"
+        "POLL_INTERVAL": "60"
     },
     "id": "fetcher",
     "mem": 100
