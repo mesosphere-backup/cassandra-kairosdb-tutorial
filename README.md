@@ -45,12 +45,15 @@ Use the DCOS CLI to launch the [Marathon app spec for KairosDB](marathon-kairosd
 Note: there is nothing to change for you in `marathon-kairosdb.json`.
 
 Once you see KairosDB running in Marathon, you can access its Web UI by looking up the IP address of the public node (`52.11.127.207` in my case) 
-along with the port that Mesos has assigned to the container. You can glean the port mapping information either by looking at the Marathon UI or through using the DCOS CLI like so:
+along with the port that Mesos has assigned to the container.
+
+Tip: You can find your public agent IP address in AWS by viewing your EC2 instances and searching for nodes with a Public IP and aws:cloudformation:logical-id PublicSlaveServerGroup
+
+You can glean the port mapping information either by looking at the Marathon UI or through using the DCOS CLI like so:
 
     $ dcos marathon task list
     APP              HEALTHY          STARTED              HOST     ID
     /cassandra/dcos    True   2016-02-09T05:51:45.269Z  10.0.2.113  cassandra_dcos.308b8c24-cef1-11e5-bf2e-02181a13a4a7
-    /grafana           True   2016-02-02T13:57:01.932Z  10.0.4.20   grafana.ce2c8b12-c9b4-11e5-bf2e-02181a13a4a7
     /kairos            True   2016-02-02T14:11:48.858Z  10.0.4.20   kairos.ce522993-c9b6-11e5-bf2e-02181a13a4a7
     $ dcos marathon task show kairos.ce522993-c9b6-11e5-bf2e-02181a13a4a7
     {
@@ -71,8 +74,7 @@ along with the port that Mesos has assigned to the container. You can glean the 
       ],
     ...
 
-Use the first port (since that's the mapped container port `8080`), which for me is `24653` and together with the public node IP 
-you can visit the KairosDB Web UI now:
+The first port (for me is `24653`) is mapped to container port `8080`. Together with the public node IP (for me http://52.11.127.207:24653), you can visit the KairosDB Web UI now:
 
 ![KairosDB UI](img/KairosDB-UI.png)
 
@@ -89,7 +91,7 @@ Note: again, as in the previous step, there is nothing to change for you in `mar
 it is serving on in the same fashion (for me that was `52.11.127.207:30786`).
 
 Next step is to connect Grafana to KairosDB as a backend, which is supported since [v2.1](http://docs.grafana.org/v2.6/datasources/kairosdb/).
-You do this by adding a new data source as shown below:
+Start by visiting the Grafana Web UI and authenticating with user:admin password:admin. Next, add a new data source as shown below:
 
 ![Grafana KairosDB](img/Grafana-datasource.png)
 
