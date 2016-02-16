@@ -70,8 +70,7 @@ along with the port that Mesos has assigned to the container. You can glean the 
       ],
     ...
 
-Use the first port (since that's the mapped container port `8080`), which for me is `24653` and together with the public node IP 
-you can visit the KairosDB Web UI now:
+The first port (for me is `24653`) is mapped to container port `8080`. Together with the public node IP (for me http://52.11.127.207:24653), you can visit the KairosDB Web UI now:
 
 ![KairosDB UI](img/KairosDB-UI.png)
 
