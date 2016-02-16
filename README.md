@@ -45,7 +45,11 @@ Use the DCOS CLI to launch the [Marathon app spec for KairosDB](marathon-kairosd
 Note: there is nothing to change for you in `marathon-kairosdb.json`.
 
 Once you see KairosDB running in Marathon, you can access its Web UI by looking up the IP address of the public node (`52.11.127.207` in my case) 
-along with the port that Mesos has assigned to the container. You can glean the port mapping information either by looking at the Marathon UI or through using the DCOS CLI like so:
+along with the port that Mesos has assigned to the container.
+
+Tip: You can find your public agent IP address in AWS by viewing your EC2 instances and searching for nodes with a Public IP and aws:cloudformation:logical-id PublicSlaveServerGroup
+
+You can glean the port mapping information either by looking at the Marathon UI or through using the DCOS CLI like so:
 
     $ dcos marathon task list
     APP              HEALTHY          STARTED              HOST     ID
