@@ -87,7 +87,7 @@ Note: again, as in the previous step, there is nothing to change for you in `mar
 it is serving on in the same fashion (for me that was `52.11.127.207:30786`).
 
 Next step is to connect Grafana to KairosDB as a backend, which is supported since [v2.1](http://docs.grafana.org/v2.6/datasources/kairosdb/).
-You do this by adding a new data source as shown below:
+Start by visiting the Grafana Web UI and authenticating with user:admin password:admin. Next, add a new data source as shown below:
 
 ![Grafana KairosDB](img/Grafana-datasource.png)
 
