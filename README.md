@@ -25,7 +25,15 @@ Once you have the DCOS cluster up and running it's time to install [Cassandra](h
 You execute above command from the place where you've installed the [DCOS command line interface](https://docs.mesosphere.com/administration/introcli/).
 It takes a couple of minutes and once you see Cassandra marked as healthy in the DCOS dashboard you're good to go.
 
-Note that the Cassandra nodes are (thanks to Mesos-DNS) available via `cassandra-dcos-node.cassandra.dcos.mesos:9160`.
+Note that the Cassandra nodes are available via `<DCOS-URI>/service/cassandra/v1/nodes/connect`.
+
+By default Cassandra does not enable THRIFT connections which are required by KairosDB.  To enable this we can do a rolling configuration update of Cassandra which enables this feature.  To do this we should change the environment variable `CASSANDRA_START_RPC` and deploy the config change as illustrated below.
+
+![Cassandra update](img/Cassandra-config-update.png)
+
+We can monitor the status of the configuration update at the `<DCOS-URI>/service/cassandra/v1/plan` as illustrated below.  Once the Plan is complete (see below), it is safe to proceed.
+
+![Cassandra plan](img/Cassandra-plan.png)
 
 ## Deployment
 
