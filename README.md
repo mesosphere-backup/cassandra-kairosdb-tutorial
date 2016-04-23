@@ -27,11 +27,11 @@ It takes a couple of minutes and once you see Cassandra marked as healthy in the
 
 Note that the Cassandra nodes are available via `<DCOS-URI>/service/cassandra/v1/nodes/connect`.
 
-By default Cassandra does not enable THRIFT connections which are required by KairosDB.  To enable this we can do a rolling configuration update of Cassandra which enables this feature.  To do this we should change the environment variable `CASSANDRA_START_RPC` and deploy the config change as illustrated below.
+By default Cassandra does not enable support for the Thrift protocol which is required by KairosDB.  To enable this we can do a rolling configuration update of Cassandra which enables this feature.  To do this we should change the environment variable `CASSANDRA_START_RPC` and deploy the config change as illustrated below.
 
 ![Cassandra update](img/Cassandra-config-update.png)
 
-We can monitor the status of the configuration update at the `<DCOS-URI>/service/cassandra/v1/plan` as illustrated below.  Once the Plan is complete (see below), it is safe to proceed.
+We can monitor the status of the configuration update at the `<DCOS-URI>/service/cassandra/v1/plan` as illustrated below.  Once the Plan is Complete (see below), it is safe to proceed.
 
 ![Cassandra plan](img/Cassandra-plan.png)
 
@@ -50,14 +50,13 @@ Use the DCOS CLI to launch the [Marathon app spec for KairosDB](marathon-kairosd
 
     $ dcos marathon app add marathon-kairosdb.json
 
-Note: there is nothing to change for you in `marathon-kairosdb.json`.
+Note: Nothing needs to be changed in `marathon-kairosdb.json`.
 
-Once you see KairosDB running in Marathon, you can access its Web UI by looking up the IP address of the public node (`52.11.127.207` in my case) 
-along with the port that Mesos has assigned to the container.
+Once you see KairosDB running in Marathon, you can access its Web UI by looking up the IP address of the public node (`52.11.127.207` in my case) along with the port that Mesos has assigned to the container.
 
 Tip: You can find your public agent IP address in AWS by viewing your EC2 instances and searching for nodes with a Public IP and aws:cloudformation:logical-id PublicSlaveServerGroup
 
-You can glean the port mapping information either by looking at the Marathon UI or through using the DCOS CLI like so:
+Once you've obtained the IP of your cluster's Public Node, you can then glean the port mapping information either through looking at the application in the Marathon UI, or through using the DCOS CLI like so:
 
     $ dcos marathon task list
     APP              HEALTHY          STARTED              HOST     ID
@@ -82,21 +81,21 @@ You can glean the port mapping information either by looking at the Marathon UI 
       ],
     ...
 
-The first port (for me is `24653`) is mapped to container port `8080`. Together with the public node IP (for me http://52.11.127.207:24653), you can visit the KairosDB Web UI now:
+The first port (for me is `24653`) is mapped to container port `8080`. Now that you have both the Public Node IP and the mapped port (for me `http://52.11.127.207:24653`), you can now visit the KairosDB Web UI at that address:
 
 ![KairosDB UI](img/KairosDB-UI.png)
 
-Even now, without any data ingested from GitHub, you can toy around with the internal metrics available. Also, if you're interested in 
-the internals of KairosDB on DCOS, check out the [manual launch notes](manual-launch.md).
+Even now, without any data ingested from GitHub, you can toy around with the internal metrics available. Also, if you're interested in the internals of KairosDB on DCOS, check out the [manual launch notes](manual-launch.md).
 
 ### Launching Grafana
 
-We want to build a dashboard with Grafana, plotting the time series data from KairosDB. For that we need to launch Grafana first:
+We want to build a dashboard with Grafana, plotting the time series data from KairosDB. For that we need to first launch Grafana using the [Marathon app spec for Grafana](marathon-grafana.json)
 
     $ dcos marathon app add marathon-grafana.json
     
-Note: again, as in the previous step, there is nothing to change for you in `marathon-grafana.json` and you can look up the port
-it is serving on in the same fashion (for me that was `52.11.127.207:30786`).
+Notes:
+- Again, as in the previous step, there is nothing for you to change in `marathon-grafana.json`
+- You can look up Grafana's serving port on the Public Node in the same fashion as before (for me that was `52.11.127.207:30786`).
 
 Next step is to connect Grafana to KairosDB as a backend, which is supported since [v2.1](http://docs.grafana.org/v2.6/datasources/kairosdb/).
 Start by visiting the Grafana Web UI and authenticating with user:admin password:admin. Next, add a new data source as shown below:
@@ -107,13 +106,11 @@ Once you've completed this step you're almost good to go.
 
 ### Getting data from GitHub
 
-To ingest data from GitHub into KairosDB, a custom Docker image is used, called the [GitHub Fetcher](/github-fetcher).
-In a nutshell, it polls `https://api.github.com/orgs/$ORG/events` with a configurable time interval and uses the KairosDB HTTP API
-to ingest the datapoints. 
+In this tutorial, we use Github activity as a sample data source. To ingest data from GitHub into KairosDB, a custom Docker image is used, called the [GitHub Fetcher](/github-fetcher).
+In a nutshell, it polls `https://api.github.com/orgs/$ORG/events` with a configurable time interval and uses the KairosDB HTTP API to ingest the datapoints. 
 
-The custom Docker images is launched as a Marathon app via the app specification [marathon-github-fetcher.json](marathon-github-fetcher.json).
-There is one parameter in `marathon-github-fetcher.json` that you **must** adapt, based on your deployment, and that is `KAIROSDB_API` 
-(which is the same IP/port as we've established earlier for the KairosDB WebUI):
+The custom Docker image is launched as a Marathon app via the app specification [marathon-github-fetcher.json](marathon-github-fetcher.json).
+Before adding this application, you must first customize the `KAIROSDB_API` value in `marathon-github-fetcher.json`. This must be pointed to the IP/port that we found earlier for the KairosDB Web UI. The provided endpoint must *not* end in a slash:
 
     ...
     "env": {
@@ -123,20 +120,19 @@ There is one parameter in `marathon-github-fetcher.json` that you **must** adapt
     },
     ...
 
-Note: if you want to watch a different organization, you can change the value of `GITHUB_ORG` and if you want to have a different
-poll frequency, `POLL_INTERVAL` is the place to do this (by default set to 60 sec, which is a good value for most organizations).
+Note:
+- You can customize the Github organization by editing `GITHUB_ORG`.
+- The period between refreshes can be customized by changing `POLL_INTERVAL`. The default value of 60 sec is a good value for most organizations.
 
 ## Usage
 
-Once you've gone through the preparation steps and launched both KairosDB and Grafana as well as configured the GitHub fetcher as
-discussed in the previous section, you're ready to produce some output.
+Once you've gone through the preparation steps and launched both KairosDB and Grafana as well as configured the GitHub fetcher as discussed in the previous section, you're ready to start importing and visualizing Github statistics.
 
 First, launch the GitHub Fetcher and make sure it is running:
 
     $ dcos marathon app add marathon-github-fetcher.json
 
-Now, data is ingested from the GitHub API into Cassandra and available in Grafana. You can either create your own dashboards or import
-the one I've created, [grafana-dashboard.json](grafana-dashboard.json), as a starting point and take it from there, like so:
+Now, data is ingested from the GitHub API into Cassandra and available in Grafana. You can either create your own dashboards or import the one I've created, [grafana-dashboard.json](grafana-dashboard.json), as a starting point and take it from there, like so:
 
 ![Grafana dashboard import](img/Grafana-dashboard-import.png)
 
