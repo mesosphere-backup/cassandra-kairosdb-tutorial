@@ -27,7 +27,7 @@ It takes a couple of minutes and once you see Cassandra marked as healthy in the
 
 Note that the Cassandra nodes are available via `<DCOS-URI>/service/cassandra/v1/nodes/connect`.
 
-By default Cassandra does not enable support for the Thrift protocol which is required by KairosDB.  To enable this we can do a rolling configuration update of Cassandra which enables this feature.  To do this we should change the environment variable `CASSANDRA_START_RPC` and deploy the config change as illustrated below.
+By default Cassandra does not enable support for the Thrift protocol which is **required** by KairosDB.  To enable this we must do a rolling configuration update of Cassandra which enables this feature.  To do this we should change the environment variable `CASSANDRA_START_RPC` and deploy the config change as illustrated below.
 
 ![Cassandra update](img/Cassandra-config-update.png)
 
@@ -51,6 +51,8 @@ Use the DCOS CLI to launch the [Marathon app spec for KairosDB](marathon-kairosd
     $ dcos marathon app add marathon-kairosdb.json
 
 Note: Nothing needs to be changed in `marathon-kairosdb.json`.
+
+If you find that your KairosDB instance is failing due to an inability to connect to Cassandra, it's likely because you still need to enable `CASSANDRA_START_RPC` in Cassandra's deployment configuration. Go back and perform that step. As the change is rolled out, your KairosDB deployment should automatically repair itself.
 
 Once you see KairosDB running in Marathon, you can access its Web UI by looking up the IP address of the public node (`52.11.127.207` in my case) along with the port that Mesos has assigned to the container.
 
@@ -98,7 +100,7 @@ Notes:
 - You can look up Grafana's serving port on the Public Node in the same fashion as before (for me that was `52.11.127.207:30786`).
 
 Next step is to connect Grafana to KairosDB as a backend, which is supported since [v2.1](http://docs.grafana.org/v2.6/datasources/kairosdb/).
-Start by visiting the Grafana Web UI and authenticating with user:admin password:admin. Next, add a new data source as shown below:
+Start by visiting the Grafana Web UI and authenticating with user:**admin** password:**admin**. Next, add a new data source as shown below:
 
 ![Grafana KairosDB](img/Grafana-datasource.png)
 
