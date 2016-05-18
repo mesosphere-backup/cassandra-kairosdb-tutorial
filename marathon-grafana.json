@@ -10,7 +10,7 @@
     ],
     "container": {
         "docker": {
-            "image": "grafana/grafana",
+            "image": "grafana/grafana:2.6.0",
             "network": "BRIDGE",
             "portMappings": [
                 {
