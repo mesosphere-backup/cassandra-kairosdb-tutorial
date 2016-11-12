@@ -1,4 +1,4 @@
-# DC/OS KairosDB Tutorial
+# GitHub stream data demo with KairosDB
 
 In this tutorial you'll learn how to set up the time series database [KairosDB](http://kairosdb.github.io/)
 along with the popular NoSQL database [Cassandra](http://cassandra.apache.org/) on [DC/OS](https://dcos.io).
