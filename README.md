@@ -1,7 +1,7 @@
-# DCOS KairosDB Tutorial
+# DC/OS KairosDB Tutorial
 
 In this tutorial you'll learn how to set up the time series database [KairosDB](http://kairosdb.github.io/)
-along with the popular NoSQL database [Cassandra](http://cassandra.apache.org/) on [DCOS](https://mesosphere.com/product/).
+along with the popular NoSQL database [Cassandra](http://cassandra.apache.org/) on [DC/OS](https://dcos.io).
 We will use the [GitHub API](https://developer.github.com/v3/) as a stream datasource and build a dashboard
 using [Grafana](http://grafana.org/).
 
@@ -13,17 +13,17 @@ Note that above exemplary IP addresses and ports are shown, which varies based o
 
 ## Preparation 
 
-The first step of the preparation is to create a [DCOS cluster](https://mesosphere.com/product/). I've used
+The first step of the preparation is to create a [DC/OS cluster](https://dcos.io). I've used
 a cluster with three private nodes and one public node (where the end-user facing components run):
 
-![DCOS dashboard](img/DCOS-dashboard.png)
+![DC/OS dashboard](img/DCOS-dashboard.png)
 
-Once you have the DCOS cluster up and running it's time to install [Cassandra](https://docs.mesosphere.com/manage-service/cassandra/):
+Once you have the DC/OS cluster up and running it's time to install [Cassandra](https://docs.mesosphere.com/manage-service/cassandra/):
 
     $ dcos package install cassandra
 
-You execute above command from the place where you've installed the [DCOS command line interface](https://docs.mesosphere.com/administration/introcli/).
-It takes a couple of minutes and once you see Cassandra marked as healthy in the DCOS dashboard you're good to go.
+You execute above command from the place where you've installed the [DC/OS command line interface](https://docs.mesosphere.com/administration/introcli/).
+It takes a couple of minutes and once you see Cassandra marked as healthy in the DC/OS dashboard you're good to go.
 
 Note that the Cassandra nodes are available via `<DCOS-URI>/service/cassandra/v1/nodes/connect`.
 
@@ -37,16 +37,16 @@ We can monitor the status of the configuration update at the `<DCOS-URI>/service
 
 ## Deployment
 
-Once you've completed the steps outlined in this section, you should see the following applications and services running in Marathon:
+Once you've completed the steps outlined in this section, you should see the following applications and services running:
 
 ![Marathon](img/Marathon.png)
 
-Note that Cassandra has already been launched in the preparation step, so in total three new apps will appear in Marathon.
+Note that Cassandra has already been launched in the preparation step, so in total three new apps will appear.
 
 ### Launching KairosDB 
 
 KairosDB is a time series database that runs on top of Cassandra, offering a HTTP data API as well as a Web UI, both exposed via port `8080`.
-Use the DCOS CLI to launch the [Marathon app spec for KairosDB](marathon-kairosdb.json): 
+Use the DC/OS CLI to launch the [Marathon app spec for KairosDB](marathon-kairosdb.json): 
 
     $ dcos marathon app add marathon-kairosdb.json
 
@@ -54,11 +54,9 @@ Note: Nothing needs to be changed in `marathon-kairosdb.json`.
 
 If you find that your KairosDB instance is failing due to an inability to connect to Cassandra, it's likely because you still need to enable `CASSANDRA_START_RPC` in Cassandra's deployment configuration. Go back and perform that step. As the change is rolled out, your KairosDB deployment should automatically repair itself.
 
-Once you see KairosDB running in Marathon, you can access its Web UI by looking up the IP address of the public node (`52.11.127.207` in my case) along with the port that Mesos has assigned to the container.
+Once you see KairosDB running in Marathon, you can access its Web UI by looking up the [IP address of the public node](https://dcos.io/docs/1.8/administration/locate-public-agent/), `52.11.127.207` in my case, along with the port that Mesos has assigned to the container.
 
-Tip: You can find your public agent IP address in AWS by viewing your EC2 instances and searching for nodes with a Public IP and aws:cloudformation:logical-id PublicSlaveServerGroup
-
-Once you've obtained the IP of your cluster's Public Node, you can then glean the port mapping information either through looking at the application in the Marathon UI, or through using the DCOS CLI like so:
+Once you've obtained the IP of your cluster's Public Node, you can then glean the port mapping information either through looking at the application in the Marathon UI, or through using the DC/OS CLI like so:
 
     $ dcos marathon task list
     APP              HEALTHY          STARTED              HOST     ID
@@ -87,7 +85,7 @@ The first port (for me is `24653`) is mapped to container port `8080`. Now that 
 
 ![KairosDB UI](img/KairosDB-UI.png)
 
-Even now, without any data ingested from GitHub, you can toy around with the internal metrics available. Also, if you're interested in the internals of KairosDB on DCOS, check out the [manual launch notes](manual-launch.md).
+Even now, without any data ingested from GitHub, you can toy around with the internal metrics available. Also, if you're interested in the internals of KairosDB on DC/OS, check out the [manual launch notes](manual-launch.md).
 
 ### Launching Grafana
 
@@ -96,6 +94,7 @@ We want to build a dashboard with Grafana, plotting the time series data from Ka
     $ dcos marathon app add marathon-grafana.json
     
 Notes:
+
 - Again, as in the previous step, there is nothing for you to change in `marathon-grafana.json`
 - You can look up Grafana's serving port on the Public Node in the same fashion as before (for me that was `52.11.127.207:30786`).
 
@@ -123,6 +122,7 @@ Before adding this application, you must first customize the `KAIROSDB_API` valu
     ...
 
 Note:
+
 - You can customize the Github organization by editing `GITHUB_ORG`.
 - The period between refreshes can be customized by changing `POLL_INTERVAL`. The default value of 60 sec is a good value for most organizations.
 
