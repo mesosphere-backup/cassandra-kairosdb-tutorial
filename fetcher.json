@@ -1,5 +1,6 @@
 {
   "id": "/github-fetcher",
+  "instances": 1,
   "cpus": 0.5,
   "mem": 100,
   "env": {
@@ -11,6 +12,6 @@
     "type": "DOCKER",
     "docker": {
       "image": "mhausenblas/kairosdb-tutorial"
-    },
+    }
   }
 }
