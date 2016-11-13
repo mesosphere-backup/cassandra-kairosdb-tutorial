@@ -15,11 +15,11 @@ This demo assumes you have a [DC/OS 1.8](https://dcos.io) cluster with at least 
 
 ## Install Cassandra
 
-First, we need to install [Cassandra](https://docs.mesosphere.com/manage-service/cassandra/) from the public Universe with the RPC enabled:
+First, we need to install [Cassandra](https://docs.mesosphere.com/manage-service/cassandra/) from the public Universe with the RPC enabled (note the checked `start_rpc` option):
 
 ![Cassandra install with RPC enabled](img/install-cassandra-with-rpc.png)
 
-Or, alternatively via the DC/OS CLI:
+Or, alternatively, you can install Cassandra via the DC/OS CLI:
 
     $ dcos package install --options=copt.json cassandra
 
@@ -40,9 +40,9 @@ Note that it takes a couple of minutes until Cassandra is marked as healthy in t
 ## Launch KairosDB 
 
 KairosDB is a time series database that runs on top of Cassandra, offering a HTTP data API as well as a Web UI, both exposed via port `8080`.
-Use the DC/OS CLI to launch the [KairosDB](marathon-kairosdb.json): 
+Use the DC/OS CLI to launch the [KairosDB](kairosdb.json): 
 
-    $ dcos marathon app add https://raw.githubusercontent.com/mesosphere/cassandra-kairosdb-tutorial/master/marathon-kairosdb.json
+    $ dcos marathon app add https://raw.githubusercontent.com/mesosphere/cassandra-kairosdb-tutorial/master/kairosdb.json
 
 Once you see KairosDB running as a service, you can access its Web UI by looking up the [IP address of the public agent](https://dcos.io/docs/1.8/administration/locate-public-agent/) (`35.156.43.3` in my case) along with the port that DC/OS has assigned to the container:
 
@@ -77,9 +77,9 @@ Even now, without any data ingested from GitHub, you can toy around with the int
 
 ## Launch Grafana
 
-We want to build a dashboard with Grafana, plotting the time series data from KairosDB. For that we need to first launch [Grafana](marathon-grafana.json):
+We want to build a dashboard with Grafana, plotting the time series data from KairosDB. For that we need to first launch [Grafana](grafana.json):
 
-    $ dcos marathon app add marathon-grafana.json
+    $ dcos marathon app add grafana.json
     
 Note that you can look up Grafana's serving port on the public agent in the same fashion as described above for KairosDB.
 
@@ -92,9 +92,9 @@ Once you've completed this step you're almost good to go.
 
 ## Get data from GitHub
 
-In this demo we use GitHub activity as the data source. To ingest data from GitHub into KairosDB, a custom Docker image is used, called the [GitHub Fetcher](/github-fetcher). In a nutshell, it polls `https://api.github.com/orgs/$ORG/events` with a configurable time interval and uses the KairosDB HTTP API to ingest the datapoints. 
+In this demo we use GitHub activity as the data source. To ingest data from GitHub into KairosDB, a custom Docker image is used, called the [GitHub Fetcher](github-fetcher/). In a nutshell, it polls `https://api.github.com/orgs/$ORG/events` with a configurable time interval and uses the KairosDB HTTP API to ingest the datapoints. 
 
-We launch the [GitHub fetcher](marathon-github-fetcher.json) with a customized value for `KAIROSDB_API` value in `marathon-github-fetcher.json`. The value must point to the IP/port that we found earlier for the KairosDB Web UI. The provided endpoint must *not* end in a slash:
+We launch the [GitHub fetcher](fetcher.json) with a customized value for `KAIROSDB_API` value in `fetcher.json`. The value must point to the IP/port that we found earlier for the KairosDB Web UI. The provided endpoint must *not* end in a slash:
 
     ...
     "env": {
@@ -111,13 +111,13 @@ Note:
 
 And now you're ready to launch the GitHub fetcher:
 
-    $ dcos marathon app add marathon-github-fetcher.json
+    $ dcos marathon app add github-fetcher.json
 
 ## Usage
 
 Once you've gone through the preparation steps and launched both KairosDB and Grafana as well as configured the GitHub fetcher as discussed in the previous section, you're ready to start importing and visualizing Github statistics.
 
-As data is ingested from the GitHub API into Cassandra and available in Grafana you can either create your own dashboards or import the one [we've prepared](grafana-dashboard.json) and take it from there:
+As data is ingested from the GitHub API into Cassandra and available in Grafana you can either create your own dashboards or import the one [we've prepared](dashboard.json) and take it from there:
 
 ![Grafana dashboard import](img/Grafana-dashboard-import.png)
 

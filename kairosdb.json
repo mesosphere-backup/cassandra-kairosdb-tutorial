@@ -1,9 +1,10 @@
 {
-  "id": "kairos",
+  "id": "/kairos",
+  "instances": 1,
   "mem": 500,
   "cpus": 0.5,
   "env": {
-    "CASS_HOSTS": "node-0.cassandra.mesos:9042",
+    "CASS_HOSTS": "node.cassandra.l4lb.thisdcos.directory:9042",
     "REPFACTOR": "1"
   },
   "container": {

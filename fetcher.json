@@ -1,0 +1,16 @@
+{
+  "id": "/github-fetcher",
+  "cpus": 0.5,
+  "mem": 100,
+  "env": {
+    "KAIROSDB_API": "http://52.11.127.207:24653",
+    "GITHUB_ORG": "mesosphere",
+    "POLL_INTERVAL": "60"
+  },
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "mhausenblas/kairosdb-tutorial"
+    },
+  }
+}
