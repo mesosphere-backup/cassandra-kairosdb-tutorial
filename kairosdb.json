@@ -4,7 +4,7 @@
   "cpus": 0.5,
   "mem": 500,
   "env": {
-    "CASS_HOSTS": "node.cassandra.l4lb.thisdcos.directory:9042",
+    "CASS_HOSTS": "node-0.cassandra.mesos:9160",
     "REPFACTOR": "1"
   },
   "container": {
